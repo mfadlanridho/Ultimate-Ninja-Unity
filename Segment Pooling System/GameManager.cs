@@ -16,10 +16,14 @@ public class GameManager : MonoBehaviour {
     }
     #endregion
 
-    public int CurrentSegment;
-    public int Increment = 20;
-    public int TotalSegmentCount = 10;
+    public int Increment {get {return 20;}}
+
+    public int CurrentSegment {get; private set;}
+    public int StarsPickedUp {get; private set;}
+    public int TotalStars {get; private set;}
+
     public System.Action MoveToNextSegmentEvent;
+    public System.Action FinalSegmentEvent;
 
     private void Awake() {
         if (instance != null) {
@@ -30,9 +34,24 @@ public class GameManager : MonoBehaviour {
             instance = this;
     }
 
-    public void MoveToNextSegment() {
-        CurrentSegment++;
+    public void SetTotalStars(int value) {
+        TotalStars = value; 
+    }
 
+    public void PickUpStar() {
+        StarsPickedUp++;
+    }
+
+    public void ContinueSegment() {
+        if (CurrentSegment == FloorCountToBeSpawned) {
+            Debug.Log("In Final Segment");
+            if (FinalSegmentEvent != null) {
+                FinalSegmentEvent();
+            }
+            return;
+        }
+
+        CurrentSegment++;
         if (MoveToNextSegmentEvent != null) {
             MoveToNextSegmentEvent();
         }
@@ -63,12 +82,19 @@ public class GameManager : MonoBehaviour {
             }        
         }
 
-		toSpawn.RemoveRange(GameConfiguration.LevelIndex + 1, toSpawn.Count - GameConfiguration.LevelIndex - 1);
+        if (GameConfiguration.LevelIndex + 1 < toSpawn.Count)
+            toSpawn.RemoveRange(GameConfiguration.LevelIndex + 1, toSpawn.Count - GameConfiguration.LevelIndex - 1);
+        
         return toSpawn;
     }
 
-    public int GetFloorCountToBeSpawned() {
-        return 2 * Mathf.FloorToInt(GameConfiguration.LevelIndex/ 5 ) + 3;
+    int floorCountToBeSpawned;
+    public int FloorCountToBeSpawned {
+        get {
+            if (floorCountToBeSpawned == 0)
+                floorCountToBeSpawned =  2 * Mathf.FloorToInt(GameConfiguration.LevelIndex/ 5 ) + 3;
+            return floorCountToBeSpawned;
+        }
     }
 }
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using SegmentPoolingSystem;
 
 public class EdgeMove : MonoBehaviour {
     [SerializeField] Transform leftEdge;
@@ -36,8 +37,9 @@ public class EdgeMove : MonoBehaviour {
 
     void Start() {
         player = GameObject.FindWithTag("Player").transform;
-        finalXTarget = MapAttributes.Instance.FloorCountToBeSpawned 
-            * MapAttributes.Instance.XIncrement;   
+        finalXTarget = 0;
+        // MapAttributes.Instance.FloorCountToBeSpawned 
+        //     * MapAttributes.Instance.XIncrement;   
     }
 
     void Update() {
@@ -86,7 +88,7 @@ public class EdgeMove : MonoBehaviour {
     }
 
     public void Move() {
-        currentTargetXPosition += MapAttributes.Instance.XIncrement;
+        // currentTargetXPosition += MapAttributes.Instance.XIncrement;
         SetMoving(true);
     }
 
@@ -108,7 +110,7 @@ public class EdgeMove : MonoBehaviour {
     }
 
     void SetMovingToTrue() {
-        rightEdge.transform.position += Vector3.right * MapAttributes.Instance.XIncrement;
+        // rightEdge.transform.position += Vector3.right * MapAttributes.Instance.XIncrement;
         Moving = true;
 
         movingEdgeDown = false;

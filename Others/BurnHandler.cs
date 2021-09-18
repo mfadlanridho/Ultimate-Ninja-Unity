@@ -3,7 +3,6 @@ using UnityEngine;
 public class BurnHandler : MonoBehaviour{
     [SerializeField] Burn burnPrefab;
     [SerializeField] Vector3 burnLocalPos;
-    [SerializeField] float duration;
 
     Burn burn;
     bool burning;
@@ -15,7 +14,7 @@ public class BurnHandler : MonoBehaviour{
             burn.transform.localPosition = burnLocalPos;
             burn.SetCharacter(character);
         }
-        time = duration;
+        time = 2f;
         SetBurning(true);
     }
 

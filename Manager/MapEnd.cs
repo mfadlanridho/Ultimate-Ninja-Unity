@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using SegmentPoolingSystem;
 
 public class MapEnd : MonoBehaviour {
     [SerializeField] GameObject completedUI;
@@ -22,8 +23,7 @@ public class MapEnd : MonoBehaviour {
         player = GameObject.FindWithTag("Player").GetComponent<Player>();
         playerAnimator = player.GetComponent<Animator>();
 
-        // EdgeMove edgeMove = FindObjectOfType<EdgeMove>();
-        // edgeMove.OnFinalPosition += MapCompleted;
+        GameManager.Instance.FinalSegmentEvent += MapCompleted;
     }
 
     void MapCompleted() {
@@ -37,9 +37,15 @@ public class MapEnd : MonoBehaviour {
         Invoke("ShowCompletedUI", 2f);
     }
 
+    bool latestMap {
+        get {
+            return GameConfiguration.LevelIndex == PlayerStats.Instance.UnlockedLevelCount - 1;
+        }
+    }
+
     void UpdatePlayerStatsInfo() {
-        if (MapAttributes.Instance.LatestMap) {
-            PlayerStats.Instance.IncreaseStarPoints(MapProgression.Instance.StarsPickedUp);
+        if (latestMap) {
+            PlayerStats.Instance.IncreaseStarPoints(GameManager.Instance.StarsPickedUp);
             PlayerStats.Instance.IncreaseUnlockedLevelCount();
         }
     }
@@ -52,9 +58,9 @@ public class MapEnd : MonoBehaviour {
     }
 
     void SetVictoriousDescription() {
-        int finalStarCount = Mathf.CeilToInt( 3f * (float) MapProgression.Instance.StarsPickedUp / (float) MapProgression.Instance.TotalStars);
-        int starIncreaseDiff = Mathf.FloorToInt( (float) MapProgression.Instance.TotalStars / 3f );
-        StartCounting(MapProgression.Instance.StarsPickedUp, starIncreaseDiff);
+        int finalStarCount = Mathf.CeilToInt( 3f * (float) GameManager.Instance.StarsPickedUp / (float) GameManager.Instance.TotalStars);
+        int starIncreaseDiff = Mathf.FloorToInt( (float) GameManager.Instance.TotalStars / 3f );
+        StartCounting(GameManager.Instance.StarsPickedUp, starIncreaseDiff);
     }
 
     void PlayPlayersVictoriousAnimation() {
@@ -67,7 +73,7 @@ public class MapEnd : MonoBehaviour {
     }
 
     void MapIsCompleted() {
-        MapAttributes.Instance.MapIsComplete();
+        // MapAttributes.Instance.MapIsComplete();
     }
 
     void StartCounting(int totalCount, int countDiff) {

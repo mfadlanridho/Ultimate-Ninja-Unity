@@ -1,25 +1,6 @@
 using UnityEngine;
 
 public static class MapData {
-    public static EnemyCountDictionary[] EnemiesToKillArray = {
-        new EnemyCountDictionary() {{EnemyName.Sword1, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword1, 3}, {EnemyName.Rifle1, 2}},
-        new EnemyCountDictionary() {{EnemyName.Sword1, 3}, {EnemyName.Rifle1, 2}, {EnemyName.Longsword1, 2}},
-        new EnemyCountDictionary() {{EnemyName.Sword1, 2}, {EnemyName.Rifle1, 2}, {EnemyName.Longsword1, 3}, {EnemyName.Minigun1, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword1, 3}, {EnemyName.Rifle1, 3}, {EnemyName.Longsword1, 3}, {EnemyName.Minigun1, 2}, {EnemyName.GreatSword1, 1}},
-
-        new EnemyCountDictionary() {{EnemyName.Sword2, 3}, {EnemyName.Rifle1, 3}, {EnemyName.Longsword1, 3}, {EnemyName.Minigun1, 2}, {EnemyName.GreatSword1, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword2, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword1, 3}, {EnemyName.Minigun1, 2}, {EnemyName.GreatSword1, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword2, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun1, 2}, {EnemyName.GreatSword1, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword2, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword1, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword2, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword2, 1}},
-
-        new EnemyCountDictionary() {{EnemyName.Sword3, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword2, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword3, 3}, {EnemyName.Rifle3, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword2, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword3, 3}, {EnemyName.Rifle3, 3}, {EnemyName.Longsword3, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword2, 1}},
-        new EnemyCountDictionary() {{EnemyName.Sword3, 3}, {EnemyName.Rifle3, 3}, {EnemyName.Longsword3, 3}, {EnemyName.Minigun3, 2}, {EnemyName.GreatSword2, 1}},
-    };
-
     public static EnemyAttributesDictionary EnemyAttributesDictionary = new EnemyAttributesDictionary() {
         { EnemyName.Sword1, new AttributesOfAnEnemy { Name = "Swordsman Lv1", MaxHealth = 200, Damage = 20, Speed = 2 }},
         { EnemyName.Sword2, new AttributesOfAnEnemy { Name = "Swordsman Lv2", MaxHealth = 250, Damage = 30, Speed = 2.5f }},
@@ -41,22 +22,6 @@ public static class MapData {
         { EnemyName.GreatSword2, new AttributesOfAnEnemy { Name = "Greatswordsman Lv2", MaxHealth = 400, Damage = 50, Speed = 2 }},
         { EnemyName.GreatSword3, new AttributesOfAnEnemy { Name = "Greatswordsman Lv3", MaxHealth = 500, Damage = 60, Speed = 2.5f }},
     };
-
-    public static int GetEnemiesToKillCount(int levelIndex) {
-        return 2 * Mathf.FloorToInt((levelIndex)/ 10) + 3;
-    }
-
-    public static int GetMaxInGameCount(int levelIndex) {
-        return Mathf.Min(Mathf.RoundToInt((levelIndex+1)/ 10) + 2, 4);
-    }
-
-    public static int GetEnemySpawnDictionaryIndex(int levelIndex) {
-        return Mathf.Min(Mathf.FloorToInt((levelIndex+2)/ 3 ), EnemiesToKillArray.Length - 1);
-    }
-
-    public static int GetSpawnableFloorTypeCount(int levelIndex) {
-        return Mathf.FloorToInt((levelIndex+1)/ 2 ) + 1;
-    }
 
     public static int GetFloorCountToBeSpawned(int levelIndex) {
         return 2 * Mathf.FloorToInt(levelIndex/ 5 ) + 3;

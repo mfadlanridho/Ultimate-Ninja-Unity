@@ -11,7 +11,6 @@ using UnityEditor;
 [CustomPropertyDrawer(typeof(RangePositionsDictionary))]
 [CustomPropertyDrawer(typeof(EnemySpawnDictionary))]
 [CustomPropertyDrawer(typeof(EnemyAttributesDictionary))]
-[CustomPropertyDrawer(typeof(FloorTypeObjectDictionary))]
 [CustomPropertyDrawer(typeof(EnemyCountDictionary))]
 [CustomPropertyDrawer(typeof(SkillTypeHoldersDictionary))]
 [CustomPropertyDrawer(typeof(SkillTypeCountDictionary))]

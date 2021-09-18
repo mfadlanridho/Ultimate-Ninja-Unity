@@ -1,4 +1,5 @@
 using UnityEngine;
+using BulletPoolingSystem;
 
 public class FirearmProjectileSpawner : MonoBehaviour {
     [SerializeField] Transform muzzle;
@@ -12,7 +13,6 @@ public class FirearmProjectileSpawner : MonoBehaviour {
     }
 
     void SpawnProjectile() {
-        FirearmProjectile spawned = Instantiate(projectile.gameObject, muzzle.position, muzzle.rotation).GetComponent<FirearmProjectile>();
-        spawned.SetDamage(weapon.Damage);
+        BulletPool.Instance.Spawn(muzzle.position, muzzle.rotation, weapon.Damage);
     }
 }

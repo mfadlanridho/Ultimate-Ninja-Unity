@@ -20,6 +20,29 @@ public class EnemySpawnManager : MonoBehaviour {
     int toKillCount;
     List<EnemyName> enemiesToKill;
 
+    int enemySpawnDictionaryIndex {
+        get {return Mathf.Min(Mathf.FloorToInt((GameConfiguration.LevelIndex+2)/ 3 ), EnemiesToKillArray.Length - 1);}
+    }
+
+    int enemiesToKillCount { 
+        get { return 2 * Mathf.FloorToInt((GameConfiguration.LevelIndex)/ 10) + 3;}
+    }
+
+    int maxInGameCount {
+        get {return Mathf.Min(Mathf.RoundToInt((GameConfiguration.LevelIndex+1)/ 10) + 2, 4);}
+    }
+
+    private void Awake() {
+        Dictionary<EnemyName, int> EnemiesToSpawn = EnemiesToKillArray[enemySpawnDictionaryIndex];
+        enemiesToKill = new List<EnemyName>();
+        foreach (var entry in EnemiesToSpawn) {
+            for (int i = 0; i < entry.Value; i++) {
+                enemiesToKill.Add(entry.Key);
+            }
+        }
+        enemiesToKill = Utility.Shuffle(enemiesToKill);
+    }
+
     private void Start() {
         enemyDetector = FindObjectOfType<EnemyDetector>();
         enemyDetector.OnAfterRemoveEnemy += IncreaseKillCount;
@@ -30,9 +53,8 @@ public class EnemySpawnManager : MonoBehaviour {
 
         FindObjectOfType<SegmentMoveHandler>().ArrivedInSegmentEvent += ArrivedInSegmentCallback;
         
-        toKillCount = MapAttributes.Instance.EnemiesToKillCount;
-        curFloorMaxInGameCount = MapAttributes.Instance.MaxInGameCount;
-        enemiesToKill = MapAttributes.Instance.GetRandomizedEnemyNames();
+        toKillCount = enemiesToKillCount;
+        curFloorMaxInGameCount = maxInGameCount;
 
         ActivateUI();
     }
@@ -66,7 +88,7 @@ public class EnemySpawnManager : MonoBehaviour {
         if (curFloorKillCount == toKillCount) {
             AudioManager.Instance.Play(enemyDeathSound.Audio, enemyDeathSound.Volume);
             DeactivateUI();
-            GameManager.Instance.MoveToNextSegment();
+            GameManager.Instance.ContinueSegment();
         }
         UpdateKillCountTextUI();
     }
@@ -98,4 +120,23 @@ public class EnemySpawnManager : MonoBehaviour {
         transform.localScale = Vector3.one * 1.5f;
         transform.DOScale(1, .5f);
     }
+
+    Dictionary<EnemyName, int>[] EnemiesToKillArray = {
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword1, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword1, 3}, {EnemyName.Rifle1, 2}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword1, 3}, {EnemyName.Rifle1, 2}, {EnemyName.Longsword1, 2}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword1, 2}, {EnemyName.Rifle1, 2}, {EnemyName.Longsword1, 3}, {EnemyName.Minigun1, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword1, 3}, {EnemyName.Rifle1, 3}, {EnemyName.Longsword1, 3}, {EnemyName.Minigun1, 2}, {EnemyName.GreatSword1, 1}},
+
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword2, 3}, {EnemyName.Rifle1, 3}, {EnemyName.Longsword1, 3}, {EnemyName.Minigun1, 2}, {EnemyName.GreatSword1, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword2, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword1, 3}, {EnemyName.Minigun1, 2}, {EnemyName.GreatSword1, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword2, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun1, 2}, {EnemyName.GreatSword1, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword2, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword1, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword2, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword2, 1}},
+
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword3, 3}, {EnemyName.Rifle2, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword2, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword3, 3}, {EnemyName.Rifle3, 3}, {EnemyName.Longsword2, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword2, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword3, 3}, {EnemyName.Rifle3, 3}, {EnemyName.Longsword3, 3}, {EnemyName.Minigun2, 2}, {EnemyName.GreatSword2, 1}},
+        new Dictionary<EnemyName, int>() {{EnemyName.Sword3, 3}, {EnemyName.Rifle3, 3}, {EnemyName.Longsword3, 3}, {EnemyName.Minigun3, 2}, {EnemyName.GreatSword2, 1}},
+    };
 }

@@ -25,9 +25,6 @@ public class EnemySpawnDictionary : SerializableDictionary<EnemyName, EnemySpawn
 public class EnemyAttributesDictionary : SerializableDictionary<EnemyName, AttributesOfAnEnemy> {}
 
 [Serializable]
-public class FloorTypeObjectDictionary : SerializableDictionary<FloorType, FloorObjects> {}
-
-[Serializable]
 public class EnemyCountDictionary : SerializableDictionary<EnemyName, int> {}
 
 [Serializable]

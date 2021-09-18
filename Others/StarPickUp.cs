@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
+using SegmentPoolingSystem;
 
 public class StarPickUp : MonoBehaviour {
     [SerializeField] Sound pickupSound;
@@ -48,7 +49,7 @@ public class StarPickUp : MonoBehaviour {
         Physics.OverlapSphereNonAlloc(star.position, 1f, player, LayerMask.GetMask("Player"));
         if (player[0] != null) {
             AudioManager.Instance.Play(pickupSound.Audio, pickupSound.Volume, star.position);
-            MapProgression.Instance.PickUpStar();
+            GameManager.Instance.PickUpStar();
             
             stars.Remove(star);
             Destroy(star.gameObject);

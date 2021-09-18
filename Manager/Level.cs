@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using SegmentPoolingSystem;
 
 [CreateAssetMenu(fileName = "Level")]
 public class Level : ScriptableObject {
@@ -12,7 +13,7 @@ public class Level : ScriptableObject {
     }
 
     public void SetGameConfigurations() {
-        MapAttributes.Instance.SetLevel(this);
+        GameConfiguration.SetLevel(LevelIndex);
         MainMenu.Instance.PlayGame();
     }
 

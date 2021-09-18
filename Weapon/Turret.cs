@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using BulletPoolingSystem;
 
 public class Turret : Trap {
     [SerializeField] float lookAtDuration;
@@ -60,10 +61,8 @@ public class Turret : Trap {
 
     public void Fire() {
         AudioManager.Instance.Play(fireSound.Audio, fireSound.Volume, muzzle.position);
+        BulletPool.Instance.Spawn(muzzle.position, muzzle.rotation, damage);
         flare?.Play();
-
-        FirearmProjectile instantiatedProjectile = Instantiate(projectile, muzzle.position, muzzle.rotation).GetComponent<FirearmProjectile>();
-        instantiatedProjectile.SetDamage(damage);
     }
     
     void RotateRail() {

@@ -16,7 +16,7 @@ public class FirearmAttack : MonoBehaviour {
         animator = GetComponent<Animator>();
         IKHandler = GetComponent<FireArmIK>();
 
-        weapon.Damage = MapData.EnemyAttributesDictionary[GetComponent<Enemy>().EnemyName].Damage;
+        weapon.SetDamage(MapData.EnemyAttributesDictionary[GetComponent<Enemy>().EnemyName].Damage);
     }
 
     public void Fire() {

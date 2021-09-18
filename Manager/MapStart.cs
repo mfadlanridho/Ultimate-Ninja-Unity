@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cinemachine;
 using DG.Tweening;
+using SegmentPoolingSystem;
 
 public class MapStart : MonoBehaviour {
     [SerializeField] CinemachineVirtualCamera vmCam;
@@ -21,9 +22,9 @@ public class MapStart : MonoBehaviour {
 
     void MoveCamera() {
         vmCam.gameObject.SetActive(true);
-        int floorCount = MapAttributes.Instance.FloorCountToBeSpawned;
+        int floorCount = GameManager.Instance.Increment;
         float finalXTarget = floorCount 
-            * MapAttributes.Instance.XIncrement;   
+            * GameManager.Instance.Increment;   
         
         DOTween.Sequence().
         AppendInterval(.5f).
