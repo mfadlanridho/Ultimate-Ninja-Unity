@@ -7,7 +7,7 @@ public class SegmentSpawner : MonoBehaviour {
     Vector3[][] sidesPositionsArray = new Vector3[][] {
         new Vector3[] {new Vector3(0, 0, 7.5f)},
         new Vector3[] {new Vector3(-7.5f, 0, -7.5f), new Vector3(7.5f, 0, 7.5f)},
-        new Vector3[] {new Vector3(-7.5f, 0, 7.5f), new Vector3(0, 0, -7.5f), new Vector3(7.5f, 0, 7.5f)},
+        new Vector3[] {new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0)},
     };
 
     Vector3[][] spikesPositionsArray = new Vector3[][] {
@@ -23,15 +23,40 @@ public class SegmentSpawner : MonoBehaviour {
 
     List<TrapSpawner.Type>[] trapArray;
     int latestIndex;
-    int activeSegmentCount = 4;
-
-    bool spawningTrap;
+    int activeSegmentCount = 2;
 
     private void Awake() {
         trapArray = new List<TrapSpawner.Type>[activeSegmentCount];
         for (int i = 0; i < trapArray.Length; i++) {
             trapArray[i] = new List<TrapSpawner.Type>();
         }
+
+        // the trap types configurations
+        // refer to https://docs.google.com/spreadsheets/d/1AToHR9ekVvHxYvJ0AKbyFjw-T2rnY0dK5U8jBnisfTs/edit?usp=sharing
+
+        TrapSpawner.Type[] trapTypes = new TrapSpawner.Type[] {TrapSpawner.Type.Spikes, TrapSpawner.Type.Lasers, TrapSpawner.Type.Turrets, TrapSpawner.Type.Flames};
+        
+        toSpawn = new List<List<TrapSpawner.Type>>() {
+            new List<TrapSpawner.Type>(){TrapSpawner.Type.Spikes},
+            new List<TrapSpawner.Type>(){TrapSpawner.Type.Lasers},
+            new List<TrapSpawner.Type>(){TrapSpawner.Type.Turrets},
+            new List<TrapSpawner.Type>(){TrapSpawner.Type.Flames},
+        };
+
+        if (GameConfiguration.LevelIndex >= 4) {
+            foreach (var item in Utilities.GetKCombsWithRept(trapTypes, 2)) {
+                toSpawn.Add(new List<TrapSpawner.Type>(item));
+            }
+        }
+
+        if (GameConfiguration.LevelIndex >= 16) {
+            foreach (var item in Utilities.GetKCombsWithRept(trapTypes, 3)) {
+                toSpawn.Add(new List<TrapSpawner.Type>(item));
+            }        
+        }
+
+        if (GameConfiguration.LevelIndex + 1 < toSpawn.Count)
+            toSpawn.RemoveRange(GameConfiguration.LevelIndex + 1, toSpawn.Count - GameConfiguration.LevelIndex - 1);
     }
 
     List<List<TrapSpawner.Type>> toSpawn;
@@ -39,72 +64,42 @@ public class SegmentSpawner : MonoBehaviour {
         trapSpawner = GetComponent<TrapSpawner>();
         baseSpawner = GetComponent<BaseSpawner>();
 
-        toSpawn = GameManager.Instance.GetTrapTypesToSpawn();
-
-        // log the trap segments to spawn
-        if (false) {
-            #if UNITY_EDITOR
-            foreach (var item in toSpawn) {
-                string str = "";
-                foreach (var item2 in item) {
-                    str += item2.ToString();                
-                }
-                Debug.Log("Spawning " + str);
-            }
-            #endif
-        }
-
-        FindObjectOfType<SegmentMoveHandler>().ArrivedInSegmentEvent += ArrivedInSegmentCallback;
-
-        Respawn(Vector3.zero);
-        Respawn(Vector3.right * GameManager.Instance.Increment, toSpawn[toSpawn.Count - 1], 1);
+        FindObjectOfType<SegmentMoveHandler>().ArrivedInSegmentEvent += DisablePreviousSegment;
+        
+        GameManager.Instance.MoveToNextSegmentEvent += ActivateNextSegment;
+        Spawn(Vector3.zero);
     }
 
-    void ArrivedInSegmentCallback() {
-        int segmentToSpawn = GameManager.Instance.CurrentSegment + 1;
-        if (segmentToSpawn >= GameManager.Instance.FloorCountToBeSpawned) {
-            Debug.Log("Respawn stopped, exceeding floor count to be spawned");
-            finalFloor.position = Vector3.right * segmentToSpawn * GameManager.Instance.Increment;
-            finalFloor.gameObject.SetActive(true);
-            FindObjectOfType<SegmentMoveHandler>().ArrivedInSegmentEvent -= ArrivedInSegmentCallback;
-            return;
-        }
-        
-        int toSpawnIndex = toSpawn.Count - 1 - GameManager.Instance.CurrentSegment;
-        toSpawnIndex = toSpawnIndex < 0 ? toSpawn.Count + toSpawnIndex : toSpawnIndex;
+    void DisablePreviousSegment() {
+        baseSpawner.BasePool.DeactivatePrevious();
 
-        if (spawningTrap)
-            Respawn(Vector3.right * segmentToSpawn * GameManager.Instance.Increment, toSpawn[toSpawnIndex], segmentToSpawn);
-        else 
-            Respawn(Vector3.right * segmentToSpawn * GameManager.Instance.Increment);
-        
-        spawningTrap = !spawningTrap;
-    }
-
-    void Respawn(Vector3 position, List<TrapSpawner.Type> types = null, int segmentIndex = 0) {
-        baseSpawner.BasePool.Respawn(position);
-
-        // log the types to spawn
-        if (false) {
-            #if UNITY_EDITOR
-            // string str = "";
-            // foreach (var item in types) {
-            //     str += item.ToString();
-            // }
-            // Debug.Log("Spawning " + str);
-            #endif
-        }
-
-        int toDeactivate = latestIndex - 2;
+        int toDeactivate = latestIndex - 1;
         toDeactivate = toDeactivate < 0 ? activeSegmentCount + toDeactivate : toDeactivate;
 
         foreach (var item in trapArray[toDeactivate]) {
             trapSpawner.TrapPoolDictionary[item].StoreToPool();
         }
         trapArray[toDeactivate].Clear();
+    }
 
-        // if (types == null)
-        //     return;
+    void ActivateNextSegment() {
+        int segmentToSpawn = GameManager.Instance.CurrentSegment;
+        if (segmentToSpawn >= GameManager.Instance.FloorCountToBeSpawned) {
+            Debug.Log("Respawn stopped, exceeding floor count to be spawned");
+            finalFloor.position = Vector3.right * segmentToSpawn * GameManager.Instance.Increment;
+            finalFloor.gameObject.SetActive(true);
+            FindObjectOfType<SegmentMoveHandler>().ArrivedInSegmentEvent -= ActivateNextSegment;
+            return;
+        }
+        
+        int toSpawnIndex = toSpawn.Count - 1 - GameManager.Instance.CurrentSegment;
+        toSpawnIndex = toSpawnIndex < 0 ? toSpawn.Count + toSpawnIndex : toSpawnIndex;
+
+        Spawn(Vector3.right * segmentToSpawn * GameManager.Instance.Increment, toSpawn[toSpawnIndex], segmentToSpawn);
+    }
+
+    void Spawn(Vector3 position, List<TrapSpawner.Type> types = null, int segmentIndex = 0) {
+        baseSpawner.BasePool.ActivateNext(position);
 
         int toActivate = (latestIndex + 1) % activeSegmentCount;
         if (types != null) {

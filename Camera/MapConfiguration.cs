@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "MapConfiguration")]
 public class MapConfiguration : ScriptableObject {
     public MapConfiguration NextMap;
-    public int XIncrement;
+    // public int XIncrement;
     public bool Unlocked;
 
     [SerializeField] EnemiesToKillConfiguration enemiesToKillConfiguration;

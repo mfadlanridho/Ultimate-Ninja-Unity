@@ -8,16 +8,16 @@ public class SegmentMoveHandler : MonoBehaviour {
     [SerializeField] Transform btEdges;
     [SerializeField] Transform lEdge;
     [SerializeField] Transform rEdge;
+    [SerializeField] Transform vmBoundaries;
 
+    float vmMinX;
     bool moving;
     Transform player;
-    Transform cam;
 
     public System.Action ArrivedInSegmentEvent;
 
     private void Start() {
         player = GameObject.FindWithTag("Player").transform;
-        cam = Camera.main.transform;
         
         GameManager.Instance.MoveToNextSegmentEvent += StartMoving;
     }
@@ -34,7 +34,6 @@ public class SegmentMoveHandler : MonoBehaviour {
         moveWarningText?.gameObject.SetActive(false);
 
         float targetX = GameManager.Instance.Increment * GameManager.Instance.CurrentSegment;
-        cam.DOMoveX(targetX, 1.75f);
         btEdges?.DOMoveX(targetX, 1.75f);
 
         rEdge.gameObject.SetActive(true);
@@ -51,15 +50,19 @@ public class SegmentMoveHandler : MonoBehaviour {
     void Update() {
         if (moving) {
             if (Mathf.FloorToInt(player.position.x) 
-            > GameManager.Instance.Increment * GameManager.Instance.CurrentSegment - 10f) {
+            > GameManager.Instance.Increment * GameManager.Instance.CurrentSegment - 4f) {
                 StopMoving();
                 if (ArrivedInSegmentEvent != null) {
                     ArrivedInSegmentEvent();
                 }
+                vmMinX = GameManager.Instance.Increment * GameManager.Instance.CurrentSegment;
+                vmBoundaries.transform.position = Vector3.right * vmMinX;
             } else {
-                Vector3 targetPos = Vector3.right * Mathf.Max(0, player.position.x - cam.position.x) * Time.deltaTime * 2f;
-                cam.Translate(targetPos);
-                btEdges?.Translate(targetPos);
+                Vector3 targetPos = Vector3.right * player.position.x;
+                btEdges.transform.position = targetPos;
+                
+                if (targetPos.x > vmMinX)
+                    vmBoundaries.transform.position = Vector3.Lerp(vmBoundaries.transform.position, targetPos, Time.deltaTime);
             }
         }
     }
