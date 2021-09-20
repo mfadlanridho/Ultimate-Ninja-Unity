@@ -2,28 +2,23 @@ using UnityEngine;
 
 namespace SegmentPoolingSystem {
 public class BaseSpawner : MonoBehaviour {
-    public Pool BasePool;
+    [SerializeField] GameObject[] objects;
+    int latestUsedIndex;
 
-    [System.Serializable]
-    public class Pool {
-        [SerializeField] GameObject[] objects;
-        int latestUsedIndex;
+    public void ActivateNext(Vector3 position) {
+        int toActivate = (latestUsedIndex + 1) % objects.Length;
+        
+        objects[toActivate].SetActive(true);
+        objects[toActivate].transform.position = position;
 
-        public void ActivateNext(Vector3 position) {
-            int toActivate = (latestUsedIndex + 1) % objects.Length;
-            
-            objects[toActivate].SetActive(true);
-            objects[toActivate].transform.position = position;
+        latestUsedIndex = toActivate;
+    }
 
-            latestUsedIndex = toActivate;
-        }
+    public void DeactivatePrevious() {
+        int toDeactivate = latestUsedIndex - 1;
+        toDeactivate = toDeactivate < 0 ? objects.Length + toDeactivate : toDeactivate;
 
-        public void DeactivatePrevious() {
-            int toDeactivate = latestUsedIndex - 1;
-            toDeactivate = toDeactivate < 0 ? objects.Length + toDeactivate : toDeactivate;
-
-            objects[toDeactivate].SetActive(false);
-        }
+        objects[toDeactivate].SetActive(false);
     }
 }
 }

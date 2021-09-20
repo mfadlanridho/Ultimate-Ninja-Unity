@@ -8,9 +8,7 @@ public class SegmentMoveHandler : MonoBehaviour {
     [SerializeField] Transform btEdges;
     [SerializeField] Transform lEdge;
     [SerializeField] Transform rEdge;
-    [SerializeField] Transform vmBoundaries;
 
-    float vmMinX;
     bool moving;
     Transform player;
 
@@ -55,14 +53,9 @@ public class SegmentMoveHandler : MonoBehaviour {
                 if (ArrivedInSegmentEvent != null) {
                     ArrivedInSegmentEvent();
                 }
-                vmMinX = GameManager.Instance.Increment * GameManager.Instance.CurrentSegment;
-                vmBoundaries.transform.position = Vector3.right * vmMinX;
             } else {
                 Vector3 targetPos = Vector3.right * player.position.x;
                 btEdges.transform.position = targetPos;
-                
-                if (targetPos.x > vmMinX)
-                    vmBoundaries.transform.position = Vector3.Lerp(vmBoundaries.transform.position, targetPos, Time.deltaTime);
             }
         }
     }

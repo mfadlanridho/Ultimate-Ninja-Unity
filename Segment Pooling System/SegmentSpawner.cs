@@ -18,8 +18,10 @@ public class SegmentSpawner : MonoBehaviour {
     #endregion
 
     [SerializeField] Transform finalFloor;
+
     TrapSpawner trapSpawner;
     BaseSpawner baseSpawner;
+    BridgeSpawner bridgeSpawner;
 
     List<TrapSpawner.Type>[] trapArray;
     int latestIndex;
@@ -63,15 +65,21 @@ public class SegmentSpawner : MonoBehaviour {
     private void Start() {
         trapSpawner = GetComponent<TrapSpawner>();
         baseSpawner = GetComponent<BaseSpawner>();
+        bridgeSpawner = GetComponent<BridgeSpawner>();
 
-        FindObjectOfType<SegmentMoveHandler>().ArrivedInSegmentEvent += DisablePreviousSegment;
+        FindObjectOfType<SegmentMoveHandler>().ArrivedInSegmentEvent += ArrivedInSegmentCallback;
         
         GameManager.Instance.MoveToNextSegmentEvent += ActivateNextSegment;
         Spawn(Vector3.zero);
     }
 
+    void ArrivedInSegmentCallback() {
+        DisablePreviousSegment();
+        bridgeSpawner.Spawn(Vector3.right * (GameManager.Instance.Increment * GameManager.Instance.CurrentSegment + 15f));
+    }
+
     void DisablePreviousSegment() {
-        baseSpawner.BasePool.DeactivatePrevious();
+        baseSpawner.DeactivatePrevious();
 
         int toDeactivate = latestIndex - 1;
         toDeactivate = toDeactivate < 0 ? activeSegmentCount + toDeactivate : toDeactivate;
@@ -93,13 +101,16 @@ public class SegmentSpawner : MonoBehaviour {
         }
         
         int toSpawnIndex = toSpawn.Count - 1 - GameManager.Instance.CurrentSegment;
-        toSpawnIndex = toSpawnIndex < 0 ? toSpawn.Count + toSpawnIndex : toSpawnIndex;
+
+        while (toSpawnIndex < 0)
+            toSpawnIndex = toSpawn.Count + toSpawnIndex;
+        Debug.Log(toSpawnIndex);
 
         Spawn(Vector3.right * segmentToSpawn * GameManager.Instance.Increment, toSpawn[toSpawnIndex], segmentToSpawn);
     }
 
     void Spawn(Vector3 position, List<TrapSpawner.Type> types = null, int segmentIndex = 0) {
-        baseSpawner.BasePool.ActivateNext(position);
+        baseSpawner.ActivateNext(position);
 
         int toActivate = (latestIndex + 1) % activeSegmentCount;
         if (types != null) {
