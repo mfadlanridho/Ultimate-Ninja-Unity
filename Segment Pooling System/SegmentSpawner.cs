@@ -75,7 +75,9 @@ public class SegmentSpawner : MonoBehaviour {
 
     void ArrivedInSegmentCallback() {
         DisablePreviousSegment();
-        bridgeSpawner.Spawn(Vector3.right * (GameManager.Instance.Increment * GameManager.Instance.CurrentSegment + 15f));
+
+        if (GameManager.Instance.CurrentSegment != GameManager.Instance.FloorCountToBeSpawned)
+            bridgeSpawner.Spawn(Vector3.right * (GameManager.Instance.Increment * GameManager.Instance.CurrentSegment + 15f));
     }
 
     void DisablePreviousSegment() {
