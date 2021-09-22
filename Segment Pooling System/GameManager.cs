@@ -17,13 +17,10 @@ public class GameManager : MonoBehaviour {
     #endregion
 
     public int Increment {get {return 30;}}
-
     public int CurrentSegment {get; private set;}
-    public int StarsPickedUp {get; private set;}
-    public int TotalStars {get; private set;}
 
     public System.Action MoveToNextSegmentEvent;
-    public System.Action FinalSegmentEvent;
+    public System.Action GameCompleteEvent;
 
     private void Awake() {
         if (instance != null) {
@@ -34,19 +31,11 @@ public class GameManager : MonoBehaviour {
             instance = this;
     }
 
-    public void SetTotalStars(int value) {
-        TotalStars = value; 
-    }
-
-    public void PickUpStar() {
-        StarsPickedUp++;
-    }
-
     public void ContinueSegment() {
         if (CurrentSegment == FloorCountToBeSpawned) {
             Debug.Log("In Final Segment");
-            if (FinalSegmentEvent != null) {
-                FinalSegmentEvent();
+            if (GameCompleteEvent != null) {
+                GameCompleteEvent();
             }
             return;
         }
