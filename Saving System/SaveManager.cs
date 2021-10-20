@@ -46,6 +46,10 @@ public class SaveManager : MonoBehaviour {
 
             playerStats.SetSkinIndex(sd.SkinIndex);
             playerStats.SetUnlockedSkillIndexes(sd.UnlockedSkinsIndexes);
+
+            playerStats.SetLevelStarsCount(sd.LevelStarsIndex, sd.LevelStarsCount);
+
+            playerStats.SetMusicDisabled(sd.MusicDisabled);
         }
     }
 
@@ -63,6 +67,19 @@ public class SaveManager : MonoBehaviour {
 
             sd.SkinIndex = playerStats.SkinIndex;
             sd.UnlockedSkinsIndexes = playerStats.UnlockedSkinsIndexes.ToArray();
+
+
+            sd.LevelStarsIndex = new int[playerStats.LevelStarsCount.Count];
+            sd.LevelStarsCount = new int[playerStats.LevelStarsCount.Count];
+
+            int i = 0;
+            foreach (var item in playerStats.LevelStarsCount) {
+                sd.LevelStarsIndex[i] = item.Key;
+                sd.LevelStarsCount[i] = item.Value;
+                i++;
+            }
+
+            sd.MusicDisabled = playerStats.MusicDisabled;
         }
     }
 
@@ -78,6 +95,8 @@ public class SaveManager : MonoBehaviour {
 
         playerStats.SetSkinIndex(0);
         playerStats.SetUnlockedSkillIndexes(new int[] {0});
+
+        playerStats.SetLevelStarsCount(new int[] {}, new int[] {});
     }
 
     void OnApplicationQuit() {

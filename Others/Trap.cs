@@ -6,11 +6,13 @@ public class Trap : MonoBehaviour {
     int segmentIndex;
     protected bool active {get; private set;}
 
-    private void OnEnable() {
+    protected virtual void OnEnable() {
         if (moveHandler == null) {
             moveHandler = FindObjectOfType<SegmentMoveHandler>();
         }
-        moveHandler.ArrivedInSegmentEvent += TryActivate;
+        if (moveHandler != null) {
+            moveHandler.ArrivedInSegmentEvent += TryActivate;
+        }
     }
 
     public void SetSegmentIndex(int segmentIndex) {

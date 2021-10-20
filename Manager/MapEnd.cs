@@ -28,11 +28,6 @@ public class MapEnd : MonoBehaviour {
     void MapCompleted() {
         // MapAttributes.Instance.MapIsComplete();
 
-        // if (GameConfiguration.LevelIndex == PlayerStats.Instance.UnlockedLevelCount - 1) {
-        //     PlayerStats.Instance.IncreaseStarPoints(GameManager.Instance.StarsPickedUp);
-        //     PlayerStats.Instance.IncreaseUnlockedLevelCount();
-        // }
-
         AudioManager.Instance.Play(sound.Audio, sound.Volume, player.transform.position);
         PlayerStateMachine.Instance.SetState(PlayerState.Victory);
         playerAnimator.Play("Victory");

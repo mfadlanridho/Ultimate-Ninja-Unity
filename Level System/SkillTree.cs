@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.UI.Extensions;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 
 public class SkillTree : MonoBehaviour {
@@ -19,6 +18,7 @@ public class SkillTree : MonoBehaviour {
     [Space]
     [SerializeField] TextMeshProUGUI AvailableStarsText;
     [SerializeField] TextMeshProUGUI TotalStarsText;
+    [SerializeField] TextMeshProUGUI priceText;
 
     [Space]
     [SerializeField] SkillTypeHoldersDictionary skillHolders;
@@ -53,7 +53,7 @@ public class SkillTree : MonoBehaviour {
     }
 
     void TryPurchasing() {
-        bool success = PlayerStats.Instance.AvailableStarPoints - 3 >= 0;
+        bool success = PlayerStats.Instance.AvailableStarPoints - selectedSkill.Price >= 0;
         if (success) {
             Purchase();
         } else {
@@ -68,14 +68,15 @@ public class SkillTree : MonoBehaviour {
 #region public
     public void DisablePurchaseButton() {
         purchaseButton.gameObject.SetActive(false);
+        priceText.gameObject.SetActive(false);
     }
 #endregion
 
     void Purchase(bool actualPurchase = true) {        
-        if (actualPurchase && purchaseSound != null) {
+        if (actualPurchase) {
             AudioManager.Instance.Play(purchaseSound.Audio, purchaseSound.Volume);
-            PlayerStats.Instance.UseStar(3);
-            PlayerStats.Instance.SetAttackCount(selectedSkill.Skill.SkillType, PlayerStats.Instance.SkillTypeCount[selectedSkill.Skill.SkillType] + 1);
+            PlayerStats.Instance.UseStar(selectedSkill.Price);
+            PlayerStats.Instance.IncreaseAttackCount(selectedSkill.Skill.SkillType);
             UpdateStarsText();
         }
         
@@ -95,7 +96,6 @@ public class SkillTree : MonoBehaviour {
         SkillHolder holder = finalSkill;
         while (holder != null) {
             SetColor(holder.Button, purchasedColor);
-            SetColor(holder.Line, purchasedColor);
 
             holder = holder.Skill.PreviousSkill?.Holder;
         }
@@ -104,11 +104,7 @@ public class SkillTree : MonoBehaviour {
     void SetColor(Button button, Color color) {
         button?.GetComponent<Image>().DOColor(color, .5f);
     }
-
-    void SetColor(UILineRenderer line, Color color) {        
-        line?.DOColor(color, .5f);
-    }
-
+    
     void SetSkillAsSelected(SkillHolder newSkill) {
         if (selectedSkill != null) {
             SetColor(selectedSkill.Button, selectedSkill.Purchased ? purchasedColor : unpurchasedColor);
@@ -130,6 +126,8 @@ public class SkillTree : MonoBehaviour {
 
     void EnablePurchaseButton() {
         purchaseButton.gameObject.SetActive(true);
+        priceText.gameObject.SetActive(true);
+        priceText.text = selectedSkill.Price.ToString() + " stars";
     }
 
     void PurchasePurchasedSkill() {

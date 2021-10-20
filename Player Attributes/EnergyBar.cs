@@ -6,7 +6,6 @@ public class EnergyBar : MonoBehaviour {
     [SerializeField] Image slider;
     [SerializeField] CanvasGroup abilityCanvas;
 
-    [SerializeField] float maxEnergy = 5;
     float energy = 0;
 
     private void Start() {
@@ -41,15 +40,15 @@ public class EnergyBar : MonoBehaviour {
     }
 
     void SetEnergy(float val) {
-        if (val > maxEnergy)
+        if (val > 3f)
             return;
         
         energy = val;
 
-        float fillAmount = energy / maxEnergy;
+        float fillAmount = energy / 3f;
         slider.DOFillAmount(fillAmount, .25f);
 
-        if (energy == maxEnergy) {
+        if (energy == 3f) {
             ActivateAbility();
         }
     }

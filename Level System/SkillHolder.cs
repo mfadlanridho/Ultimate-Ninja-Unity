@@ -5,16 +5,16 @@ using UnityEngine.UI.Extensions;
 [System.Serializable]
 public class SkillHolder : MonoBehaviour {
     [SerializeField] PlayerSkill playerSkill;
+    [SerializeField] int price;
     
     [Space]
     [SerializeField] Button button;
-    [SerializeField] UILineRenderer line;
     [SerializeField] Image lockImage;
 
     public PlayerSkill Skill => playerSkill;
     public Button Button => button;
-    public UILineRenderer Line => line;
-    public bool Purchased{get{return playerSkill.Purchased;}}
+    public int Price => price;
+    public bool Purchased => playerSkill.Purchased;
 
     Animator animator;
 

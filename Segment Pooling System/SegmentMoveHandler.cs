@@ -48,7 +48,7 @@ public class SegmentMoveHandler : MonoBehaviour {
     void Update() {
         if (moving) {
             if (Mathf.FloorToInt(player.position.x) 
-            > GameManager.Instance.Increment * GameManager.Instance.CurrentSegment - 10f) {
+            > GameManager.Instance.Increment * GameManager.Instance.CurrentSegment - 7f) {
                 StopMoving();
                 if (ArrivedInSegmentEvent != null) {
                     ArrivedInSegmentEvent();

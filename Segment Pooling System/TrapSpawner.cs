@@ -13,9 +13,9 @@ public class TrapSpawner : MonoBehaviour {
         Queue<Trap> usedObjects = new Queue<Trap>();
 
         public void Spawn(Vector3 position, int segmentIndex) {
-            Trap trapToSpawn = null;
             Vector3 rotation = position.z > 0 ? Vector3.up * 180f : Vector3.zero;
                 
+            Trap trapToSpawn = null;
             if (usedObjects.Count == objects.Count) {
                 trapToSpawn = Instantiate(prefab.gameObject, position, Quaternion.Euler(rotation)).GetComponent<Trap>();
                 objects.Add(trapToSpawn);

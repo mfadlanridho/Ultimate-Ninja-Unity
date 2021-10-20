@@ -5,20 +5,17 @@ public class PlayerSkill : ScriptableObject {
     [SerializeField] SkillType skillType;
     [SerializeField] PlayerSkill[] nextSkills;
     
-    [SerializeField] public string Name;
-    [SerializeField] public float Damage;
-    [SerializeField] public string Desc;
-
     public System.Action OnPurchase;
     public System.Action OnAccess;
 
-    [SerializeField] public bool Purchased;
+    public bool Purchased {get; private set;}
     public bool Accessible {get; private set;}
+
     public PlayerSkill PreviousSkill {get; private set;}
     public SkillHolder Holder {get; private set;}
 
-    public SkillType SkillType {get{return skillType;}}
-    public PlayerSkill[] NextSkills {get{return nextSkills;}}
+    public SkillType SkillType => skillType;
+    public PlayerSkill[] NextSkills => nextSkills;
 
     public void Animate(Animator animator) {
         animator.Play(name);

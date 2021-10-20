@@ -13,6 +13,11 @@ public class SaveData {
 
     public int[] UnlockedSkinsIndexes;
 
+    public int[] LevelStarsIndex;
+    public int[] LevelStarsCount;
+
+    public bool MusicDisabled;
+
     public string ToJson() {
         return JsonUtility.ToJson(this);
     }

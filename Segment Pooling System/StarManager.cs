@@ -13,6 +13,8 @@ public class StarManager : MonoBehaviour {
 
     [SerializeField] Sound starPopupSound;
     [SerializeField] Sound starCollectSound;
+
+    [SerializeField] GameObject watchAdForStars;
     
     Transform[] stars;
     Collider[] player = new Collider[1];
@@ -24,12 +26,7 @@ public class StarManager : MonoBehaviour {
     float time;
     bool active;
 
-    private void Awake() {
-        if (GameConfiguration.LevelIndex != PlayerStats.Instance.UnlockedLevelCount - 1) {
-            Destroy(this);
-        }
-    }
-
+    RewardedAdManager rewardedAdManager;
 
     private void Start() {
         stars = new Transform[5];
@@ -39,6 +36,9 @@ public class StarManager : MonoBehaviour {
         }
         GameManager.Instance.MoveToNextSegmentEvent += Spawn;
         GameManager.Instance.GameCompleteEvent += CountStars;
+
+        rewardedAdManager = new RewardedAdManager("ca-app-pub-1207640803653889/8118487655");
+        rewardedAdManager.OnUserEarnedRewardEvent += GainUnpickedStars;
     }
 
     void Update() {
@@ -91,43 +91,91 @@ public class StarManager : MonoBehaviour {
             stars[i].gameObject.SetActive(true);
             stars[i].DOMoveY(1f, 1f);
         }
+        AnimateBrightness();
     }
 
     void CountStars() {
-        // countText.gameObject.SetActive(true);
-        // collected.SetActive(true);
+        PlayerStats.Instance.AddLevelStarsCount(GameConfiguration.LevelIndex, totalStarsPickedUp);
         if (GameConfiguration.LevelIndex == PlayerStats.Instance.UnlockedLevelCount - 1) {
-            PlayerStats.Instance.IncreaseStarPoints(totalStarsPickedUp);
             PlayerStats.Instance.IncreaseUnlockedLevelCount();
         }
 
         StartCoroutine(CountStarsCoroutine());
     }
 
+    void AnimateCounting(Transform transform) {
+        transform.localScale = Vector3.one * 2f;
+        transform.DOScale(1, .5f);
+    }
+
+    void AnimateBrightness() {
+        Sequence s = DOTween.Sequence();
+        s.Append(timeText.fontSharedMaterial.DOFloat(1f, ShaderUtilities.ID_GlowOuter, 1f));
+        s.Append(timeText.fontSharedMaterial.DOFloat(.1f, ShaderUtilities.ID_GlowOuter, 1f));
+        s.OnComplete(OnTransition);
+    }
+
+    void OnTransition() {
+        if (active)
+            AnimateBrightness();
+    }
+
+    public void WatchAdForStars() {
+        rewardedAdManager.ShowRewardedAd();
+    }
+
+    void GainUnpickedStars() {
+        StartCoroutine(GainUnpickedStarsCoroutine());
+    }
+
+    int uiStarsIndex;
+    int starsCounted;
+    int pickedUpToStar;
+    float timePerStar;
+
     IEnumerator CountStarsCoroutine() {
+        timePerStar = 2f / totalStarsPickedUp;
         yield return new WaitForSeconds(2f);
-        int starsCounted = 0;
-        int uiStarsIndex = 0;
-        int pickedUpToStar = Mathf.FloorToInt((float) totalStarsPickedUp / 3f);
+        starsCounted = 0;
+        uiStarsIndex = 0;
+        pickedUpToStar = Mathf.FloorToInt((float) totalStarsSpawned / 3f);
+
+        if (totalStarsPickedUp != totalStarsSpawned) {
+            rewardedAdManager.RequestAndLoadRewardedAd();
+        }
 
         while (starsCounted < totalStarsPickedUp) {
             starsCounted++;
             countText.text = starsCounted.ToString();
-            Animate(countText.transform);
+            AnimateCounting(countText.transform);
 
             if (starsCounted % pickedUpToStar == 0) {
                 UIStars[uiStarsIndex].SetActive(true);
                 AudioManager.Instance.Play(starPopupSound.Audio, starPopupSound.Volume);
                 uiStarsIndex++;
             }
-            yield return new WaitForSeconds(.25f);
+            yield return new WaitForSeconds(timePerStar);
+        }
+
+        if (totalStarsPickedUp != totalStarsSpawned) {
+            watchAdForStars.SetActive(true);
         }
     }
 
-    void Animate(Transform transform) {
-        transform.localScale = Vector3.one * 2f;
-        transform.DOScale(1, .5f);
-    }
+    IEnumerator GainUnpickedStarsCoroutine() {
+        while (starsCounted < totalStarsSpawned) {
+            starsCounted++;
+            countText.text = starsCounted.ToString();
+            AnimateCounting(countText.transform);
 
+            if (starsCounted % pickedUpToStar == 0) {
+                UIStars[uiStarsIndex].SetActive(true);
+                AudioManager.Instance.Play(starPopupSound.Audio, starPopupSound.Volume);
+                uiStarsIndex++;
+            }
+            yield return new WaitForSeconds(timePerStar);
+        }
+        watchAdForStars.SetActive(false);
+    }
 }
 }

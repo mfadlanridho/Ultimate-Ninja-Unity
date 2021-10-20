@@ -6,8 +6,8 @@ public class SegmentSpawner : MonoBehaviour {
     #region positions array
     Vector3[][] sidesPositionsArray = new Vector3[][] {
         new Vector3[] {new Vector3(0, 0, 7.5f)},
-        new Vector3[] {new Vector3(-7.5f, 0, -7.5f), new Vector3(7.5f, 0, 7.5f)},
-        new Vector3[] {new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0)},
+        new Vector3[] {new Vector3(-5f, 0, -7.5f), new Vector3(5f, 0, 7.5f)},
+        new Vector3[] {new Vector3(-5f, 0, -7.5f), new Vector3(0, 0, 7.5f) , new Vector3(5f, 0, 7.5f)}
     };
 
     Vector3[][] spikesPositionsArray = new Vector3[][] {

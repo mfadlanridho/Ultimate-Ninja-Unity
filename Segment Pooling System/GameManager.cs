@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour {
     }
     #endregion
 
-    public int Increment {get {return 30;}}
+    public float Increment {get {return 32.5f;}}
     public int CurrentSegment {get; private set;}
 
     public System.Action MoveToNextSegmentEvent;

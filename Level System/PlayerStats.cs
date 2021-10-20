@@ -2,9 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 
 public class PlayerStats : MonoBehaviour {
-    [SerializeField] SkillTypeCountDictionary skillTypeCount;
-
-    public System.Action OnSkillPointsChange;
 
     # region Singleton
     public static PlayerStats Instance;
@@ -17,34 +14,36 @@ public class PlayerStats : MonoBehaviour {
         }
     }
     #endregion
+    
+    public int LevelIndex {get; private set;}
 
-    public float MaxHealth;
-    public float Speed = 5;
-    public float Damage = 5;
+    public float MaxHealth {get; private set;}
+    public float Speed {get; private set;}
+    public float Damage {get {return 25000f;}}
 
-    [Space]
-    public int StarPoints;
-    public int UsedStars;
+    public int StarPoints {get; private set;}
+    public int UsedStars {get; private set;}
+    public int AvailableStarPoints {get{return StarPoints - UsedStars;}}
 
-    public int AvailableStarPoints {
-        get {
-            return StarPoints - UsedStars;
-        }
-    }
-
-    [Space]
-    public List<int> UnlockedSkinsIndexes;
     public int UnlockedLevelCount {get; private set;}
 
-    public GameState GameState;
+    public GameState GameState {get; private set;}
 
-    public SkillTypeCountDictionary SkillTypeCount => skillTypeCount;
-    public int BasicAttackCount => skillTypeCount[SkillType.BasicAttack];
-    public int ComboAttackCount => skillTypeCount[SkillType.ComboAttack];
+    public int BasicAttackCount {get; private set;}
+    public int ComboAttackCount {get; private set;}
 
-    public int SkinIndex;
+    public List<int> UnlockedSkinsIndexes {get; private set;}
+    public int SkinIndex {get; private set;}
+
+    public Dictionary<int, int> LevelStarsCount {get; private set;}
+
+    public bool MusicDisabled {get; private set;}
 
     private void Start() {
+        Invoke("ShitCode", .1f);
+    }
+
+    void ShitCode() {
         SkinsHolder skinsHolder = FindObjectOfType<SkinsHolder>();
         PlayerSkin skin = skinsHolder.Skins[SkinIndex]; 
         skin.gameObject.SetActive(true);
@@ -52,21 +51,32 @@ public class PlayerStats : MonoBehaviour {
         SetSpeed(skin.Speed);
     }
 
-    public void SetAttackCount(SkillType type, int count) {
-        skillTypeCount[type] = count;
+    public void SetGameState(GameState state) {
+        GameState = state;
+    }
+
+    public void IncreaseAttackCount(SkillType type, int count = 1) {
+        if (type == SkillType.BasicAttack) {
+            BasicAttackCount += count;
+        } else {
+            ComboAttackCount += count;
+        }
+    }
+
+    public void SetAttackCount(SkillType type, int value) {
+        if (type == SkillType.BasicAttack) {
+            BasicAttackCount = value;
+        } else {
+            ComboAttackCount = value;
+        }
     }
 
     public void UseStar(int count = 1) {
         UsedStars += count;
     }
 
-    public void IncreaseStarPoints(int value) {
-        StarPoints += value;
-    }
-
     public void IncreaseUnlockedLevelCount() {
         UnlockedLevelCount++;
-        Debug.Log("Unlocked level count is now " + UnlockedLevelCount);
     }
 
     public void SetStarPoints(int value) {
@@ -104,6 +114,31 @@ public class PlayerStats : MonoBehaviour {
         if (!UnlockedSkinsIndexes.Contains(0)) {
             UnlockedSkinsIndexes.Add(0);
         }
+    }
+
+    public void AddLevelStarsCount(int levelIndex, int count) {
+        if (levelIndex < LevelStarsCount.Count) {
+            int additionalStars = count - LevelStarsCount[levelIndex];
+            if (additionalStars > 0) {
+                LevelStarsCount[levelIndex] = count;
+                StarPoints += additionalStars;
+            }
+        } else {
+            LevelStarsCount.Add(levelIndex, count);
+            StarPoints += count;
+        }
+    }
+
+    public void SetLevelStarsCount(int[] levelStarsIndex, int[] levelStarsCount) {
+        this.LevelStarsCount = new Dictionary<int, int>();
+
+        for (int i = 0; i < levelStarsIndex.Length; i++) {
+            this.LevelStarsCount.Add(levelStarsIndex[i], levelStarsCount[i]);
+        }
+    }
+
+    public void SetMusicDisabled(bool value) {
+        MusicDisabled = value;
     }
 }
 

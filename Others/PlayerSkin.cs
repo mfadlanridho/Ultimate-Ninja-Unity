@@ -7,9 +7,12 @@ public class PlayerSkin : MonoBehaviour {
     [Space]
     public int SkinIndex;
     public int Price;
-    public bool Purchased;
+    public bool Purchased {get; private set;}
 
-    public void Purchase() {
+    public void Purchase() {        
         Purchased = true;
+
+        if (!PlayerStats.Instance.UnlockedSkinsIndexes.Contains(SkinIndex))
+            PlayerStats.Instance.UnlockedSkinsIndexes.Add(SkinIndex);
     }
 }

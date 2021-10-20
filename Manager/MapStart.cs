@@ -22,7 +22,7 @@ public class MapStart : MonoBehaviour {
 
     void MoveCamera() {
         vmCam.gameObject.SetActive(true);
-        int floorCount = GameManager.Instance.Increment;
+        float floorCount = GameManager.Instance.Increment;
         float finalXTarget = floorCount 
             * GameManager.Instance.Increment;   
         

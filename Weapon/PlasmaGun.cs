@@ -6,7 +6,6 @@ public class PlasmaGun : Trap {
     [SerializeField] LayerMask layerMask;
     [SerializeField] Transform muzzle;
     [SerializeField] GameObject beam;
-    [SerializeField] Vector2 rotationMovement;
     [SerializeField] float duration;
     [SerializeField] float damage = 25f;
 
@@ -16,10 +15,20 @@ public class PlasmaGun : Trap {
 
     bool isPlaying;
     RaycastHit[] results;
+    Vector2 rotationMovement;
 
     protected override void Activate() {
         base.Activate();
         PlayBeamGun();
+    }
+
+    protected override void OnEnable() {
+        base.OnEnable();
+
+        rotationMovement.x = transform.eulerAngles.y - 45f;
+        rotationMovement.y = transform.eulerAngles.y + 45f;
+
+        transform.eulerAngles = transform.eulerAngles + Vector3.up * 45f;
     }
 
     void PlayBeamGun() {
@@ -77,7 +86,7 @@ public class PlasmaGun : Trap {
         audioSource.Play();
     }
 
-        void PlayPlayingSoundSequentially() {
+    void PlayPlayingSoundSequentially() {
         StartCoroutine(PlayPlayingSoundSequentiallyCoroutine());
     }
 

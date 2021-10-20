@@ -36,12 +36,15 @@ public class MainMenu : MonoBehaviour {
         }
 
         playerAnimator.Play("In Menu");
-        PlayerStats.Instance.GameState = GameState.InMenu;
+        playerAnimator.SetBool("In Menu", true);
+        PlayerStats.Instance.SetGameState(GameState.InMenu);
     }
 
     public void PlayGame() {
         playerAnimator.Play("Movement");
-        PlayerStats.Instance.GameState = GameState.InGame;
+
+        playerAnimator.SetBool("In Menu", false);
+        PlayerStats.Instance.SetGameState(GameState.InGame);
         PlayerStateMachine.Instance.SetState(PlayerState.None);
         LevelLoader.Instance.LoadScene(1);
     }

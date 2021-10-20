@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections;
 
 public class PopUpTrap : Trap {
     [SerializeField] Transform spikes;
@@ -34,8 +35,13 @@ public class PopUpTrap : Trap {
 
     void OnTransition() {
         if (active) {
-            PlaySpikesTrap();
+            StartCoroutine(TransitionCoroutine());
         }
+    }
+
+    IEnumerator TransitionCoroutine() {
+        yield return new WaitForSeconds(1f);
+        PlaySpikesTrap();
     }
 
     void PlaySound() {
